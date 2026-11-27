@@ -1,0 +1,5 @@
+create table if not exists users(id serial primary key,email text unique not null,hash text not null,role text not null check(role in('admin','user')),active boolean not null default true,created_at timestamptz default now());
+create table if not exists resets(token_hash text primary key,user_id int not null references users(id),expires timestamptz not null);
+create table if not exists datasets(id serial primary key,period text not null,version int not null,name text not null,original_name text,stored_path text not null,sha256 text,date_from date,date_to date,n int,status text not null default 'active' check(status in('active','archived')),payload jsonb not null,uploaded_by int references users(id),created_at timestamptz default now(),unique(period,version));
+create table if not exists geocache(q text primary key,lat double precision,lng double precision,loc_type text);
+create table if not exists overrides(dataset_id int references datasets(id),nid text,lat double precision,lng double precision,by_user int,primary key(dataset_id,nid));
